@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./index.js"></script>
+    <script src="./shapes.js"></script>
+
+    <title>Игра хаос</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class="counter">Точек <span id="counter">0</span></div>
+    <div id="menu" class="menu"></div>
+
+    <a href="https://github.com/levtsypanov/chaos_game" target="_blank" class="github">Исходный код на Github</a>
+
+    <script>
+      const canvas = document.getElementById('canvas');
+      const counter = document.getElementById('counter');
+      const menu = document.getElementById('menu');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      /** Список фигур для рисования */
+      const shapes = [
+        {
+          name: 'No name game',
+          attractorsCreator: createTriangle,
+          formula: (a, v) => (v + a) / 2
+        },
+        {
+          name: 'Серпинский ковер',
+          attractorsCreator: createCarpet,
+          formula: (a, v) => (v + a * 2) / 3
+        },
+        {
+          name: 'Серпинский шестиугольник',
+          attractorsCreator: createHexagon,
+          formula: (a, v) => (v + a * 2) / 3
+        }
+      ];
+
+      // Ссылки меню
+      const links = shapes.map((shape, i) => {
+        const link = document.createElement('a');
+        link.href = '#';
+
+        link.innerHTML = shape.name;
+
+        return link;
+      });
+
+      links.forEach((link, i) => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          runShape(i);
+        });
+
+        menu.appendChild(link);
+      });
+
+      /**
+       * Запускает рисование фигуры по указанному индексу
+       */
+      const runShape = index => {
+        links.forEach(link => link.classList.remove('active'));
+        links[index].classList.add('active');
+
+        stopDrawing = startChaosGame(
+          canvas,
+          shapes[index].attractorsCreator(canvas.width, canvas.height, canvas.height / 9),
+          shapes[index].formula,
+          0,
+          count => {
+            counter.innerHTML = count;
+          }
+        );
+      };
+
+      runShape(0);
+    </script>
+  </body>
+</html>
